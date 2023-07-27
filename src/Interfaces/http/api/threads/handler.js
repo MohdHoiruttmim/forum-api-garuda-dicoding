@@ -5,6 +5,7 @@ class ThreadsHandler {
     this._container = container;
 
     this.postThreadHandler = this.postThreadHandler.bind(this);
+    this.postThreadCommentHandler = this.postThreadCommentHandler.bind(this);
   }
 
   async postThreadHandler(request, h) {
@@ -17,6 +18,29 @@ class ThreadsHandler {
       status: 'success',
       data: {
         addedThread,
+      },
+    });
+    response.code(201);
+    return response;
+  }
+
+  async postThreadCommentHandler(request, h) {
+    const { id: userId } = request.auth.credentials;
+    const { threadId } = request.params;
+    const { content } = request.payload;
+
+    const addThreadCommentUseCase = 'coming soon!';
+    request.payload.owner = userId;
+    const addedComment = addThreadCommentUseCase;
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        addedComment: {
+          content,
+        },
+        userId,
+        threadId,
       },
     });
     response.code(201);
