@@ -3,8 +3,8 @@ const routes = require('./routes');
 
 module.exports = {
   name: 'threads',
-  register: async (server, { }) => {
-    const threadsHandler = new ThreadsHandler();
+  register: async (server, { container }) => {
+    const threadsHandler = new ThreadsHandler(container);
     server.route(routes(threadsHandler));
   },
 };

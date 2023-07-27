@@ -47,6 +47,7 @@ const createServer = async (container) => {
     },
     {
       plugin: threads,
+      options: { container },
     },
   ]);
 
