@@ -9,11 +9,11 @@ class PostComment {
   }
 
   _verifyPayload({ content, threadId }) {
-    if (!content) {
+    if (!content || !threadId) {
       throw new Error('POST_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof content !== 'string') {
+    if (typeof content !== 'string' || !threadId) {
       throw new Error('POST_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

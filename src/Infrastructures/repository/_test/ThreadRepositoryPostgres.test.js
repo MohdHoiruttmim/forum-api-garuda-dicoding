@@ -19,7 +19,7 @@ describe('ThreadRepositoryPostgres', () => {
       // Arrange
       const payloadUserRegister = {
         id: 'user-089',
-        username: 'himawan',
+        username: 'user01',
         password: 'secret',
       };
       await UsersTableTestHelper.addUser(payloadUserRegister);
@@ -35,6 +35,38 @@ describe('ThreadRepositoryPostgres', () => {
       // Action
       const thread = await ThreadsTableTestHelper.getThreadsById('thread-123');
       expect(thread).toHaveLength(1);
+    });
+  });
+
+  describe('getThread function', () => {
+    it('should persist thread and return detail thread correctly', async () => {
+      // Arrange
+      const payloadUserRegister = {
+        id: 'user-090',
+        username: 'user02',
+        password: 'secret',
+      };
+      const payloadAddThread = {
+        id: 'thread-004',
+        title: 'Lorem ipsum!',
+        body: 'Lorem ipsum dolor sir amet amet cabang jakarta',
+        owner: 'user-090',
+      };
+
+      await UsersTableTestHelper.addUser(payloadUserRegister);
+      await ThreadsTableTestHelper.addThreads(payloadAddThread);
+
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      // Action
+      const thread = await threadRepositoryPostgres.getThreadById(payloadAddThread.id);
+      expect(thread).toStrictEqual({
+        id: 'thread-004',
+        title: 'Lorem ipsum!',
+        body: 'Lorem ipsum dolor sir amet amet cabang jakarta',
+        owner: 'user-090',
+        date: new Date('2023-01-19T00:00:00.000Z'),
+      });
     });
   });
 });
