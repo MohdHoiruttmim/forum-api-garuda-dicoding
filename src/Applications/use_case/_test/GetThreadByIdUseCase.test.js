@@ -3,7 +3,7 @@ const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const GetThreadByIdUseCase = require('../GetThreadByIdUseCase');
 
 /*
-   KITA BELUM MEMBUAT GetThreadDetail ENTITIAS UNTUK MENGGANTIKAN CLASS
+    KITA BELUM MEMBUAT GetThreadDetail ENTITIAS UNTUK MENGGANTIKAN CLASS
     AddedThread PADA BARIS 23 DAN 35
 */
 

@@ -8,6 +8,20 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     this._idGenerator = idGenerator;
   }
 
+  async verifyAvailableThread(threadId) {
+    const query = {
+      text: 'SELECT id FROM threads WHERE id = $1',
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+    if (!result.rowCount) {
+      throw new NotFoundError();
+    }
+    // console.log('ini penyakit')
+    return result.rowCount;
+  }
+
   async addThread(postThread) {
     const { title, body, owner } = postThread;
     const id = `thread-${this._idGenerator()}`;

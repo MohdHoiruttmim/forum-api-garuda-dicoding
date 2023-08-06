@@ -1,5 +1,6 @@
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const PostThread = require('../../../Domains/threads/entities/PostThread');
 const pool = require('../../database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
@@ -12,6 +13,37 @@ describe('ThreadRepositoryPostgres', () => {
 
   afterAll(async () => {
     await pool.end();
+  });
+
+  describe('verifyAvailableThread function', () => {
+    it('should return error not found thread when thread not exist', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      // Action and Assert
+      await expect(threadRepositoryPostgres.verifyAvailableThread('thread-not'))
+        .rejects.toThrowError(NotFoundError);
+    });
+
+    it('should not return not found error when thread exist', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      //  Assert
+      UsersTableTestHelper.addUser({
+        id: 'user-010',
+        username: 'user010',
+        password: 'secret',
+      });
+      ThreadsTableTestHelper.addThreads({
+        id: 'thread-010',
+        owner: 'user-010',
+      });
+
+      // Action
+      await expect(threadRepositoryPostgres.verifyAvailableThread('thread-010'))
+        .resolves.not.toThrowError(NotFoundError);
+    });
   });
 
   describe('addThread function', () => {
