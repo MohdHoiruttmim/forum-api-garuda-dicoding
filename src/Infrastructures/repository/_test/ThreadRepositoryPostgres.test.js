@@ -1,5 +1,6 @@
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const PostThread = require('../../../Domains/threads/entities/PostThread');
 const pool = require('../../database/postgres/pool');
@@ -70,7 +71,7 @@ describe('ThreadRepositoryPostgres', () => {
     });
   });
 
-  describe('getThread function', () => {
+  describe('getThreadbyId function', () => {
     it('should persist thread and return detail thread correctly', async () => {
       // Arrange
       const payloadUserRegister = {
@@ -82,22 +83,37 @@ describe('ThreadRepositoryPostgres', () => {
         id: 'thread-004',
         title: 'Lorem ipsum!',
         body: 'Lorem ipsum dolor sir amet amet cabang jakarta',
-        owner: 'user-090',
+        owner: payloadUserRegister.id,
+      };
+      const payloadAddComment = {
+        id: 'comment-000',
+        content: 'ini adalah komen!',
+        threadId: payloadAddThread.id,
+        owner: payloadUserRegister.id,
       };
 
       await UsersTableTestHelper.addUser(payloadUserRegister);
       await ThreadsTableTestHelper.addThreads(payloadAddThread);
+      await CommentsTableTestHelper.AddThreadComment(payloadAddComment);
 
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action
       const thread = await threadRepositoryPostgres.getThreadById(payloadAddThread.id);
       expect(thread).toStrictEqual({
-        id: 'thread-004',
-        title: 'Lorem ipsum!',
-        body: 'Lorem ipsum dolor sir amet amet cabang jakarta',
-        owner: 'user-090',
+        id: payloadAddThread.id,
+        title: payloadAddThread.title,
+        body: payloadAddThread.body,
         date: new Date('2023-01-19T00:00:00.000Z'),
+        username: payloadUserRegister.username,
+        comments: [
+          {
+            id: payloadAddComment.id,
+            username: payloadUserRegister.username,
+            date: new Date('2023-01-19T00:00:00.000Z'),
+            content: payloadAddComment.content,
+          },
+        ],
       });
     });
   });

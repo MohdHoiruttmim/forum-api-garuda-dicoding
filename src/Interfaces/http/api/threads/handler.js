@@ -15,16 +15,14 @@ class ThreadsHandler {
     const { threadId } = request.params;
     const getThreadByIdUseCase = this._container.getInstance(GetThreadByIdUseCase.name);
 
-    const threadDetail = await getThreadByIdUseCase.execute(threadId);
+    const thread = await getThreadByIdUseCase.execute(threadId);
 
-    const response = h.response({
+    return {
       status: 'success',
       data: {
-        threadDetail,
+        thread,
       },
-    });
-    response.code(200);
-    return response;
+    };
   }
 
   async postThreadHandler(request, h) {
@@ -46,7 +44,6 @@ class ThreadsHandler {
   async postThreadCommentHandler(request, h) {
     const { id: userId } = request.auth.credentials;
     const { threadId } = request.params;
-    const { content } = request.payload;
 
     const addThreadCommentUseCase = this._container.getInstance(AddCommentUseCase.name);
     request.payload.owner = userId;

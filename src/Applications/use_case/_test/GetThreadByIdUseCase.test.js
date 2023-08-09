@@ -2,11 +2,6 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const GetThreadByIdUseCase = require('../GetThreadByIdUseCase');
 
-/*
-    KITA BELUM MEMBUAT GetThreadDetail ENTITIAS UNTUK MENGGANTIKAN CLASS
-    AddedThread PADA BARIS 23 DAN 35
-*/
-
 describe('GetThreadByIdUseCase', () => {
   it('should orchestrating get thread by id action correctly', async () => {
     // Arrange
@@ -15,15 +10,30 @@ describe('GetThreadByIdUseCase', () => {
       title: 'Lorem ipsum!',
       owner: 'user-123',
     };
-    const userPayload = {
-      id: 'user-123',
+
+    const threadDetailResponse = {
+      id: 'thread-123',
+      title: 'Lorem ipsum!',
+      body: 'Lorem ipsum dolor sir amet amet lorem ipsum!',
+      date: new Date('2023-01-19T00:00:00.000Z'),
+      username: 'user-001',
+      comments: [
+        {
+          id: 'comments-123',
+          username: 'johndoe',
+          date: new Date('2023-01-19T00:00:00.000Z'),
+          content: 'ini adalah sebuah komen!',
+        },
+      ],
     };
 
     const mockThreadRepository = new ThreadRepository();
 
     // Mocking
     mockThreadRepository.getThreadById = jest.fn()
-      .mockImplementation(() => Promise.resolve(new AddedThread(useCasePayload)));
+      .mockImplementation(() => Promise.resolve(threadDetailResponse));
+    mockThreadRepository.verifyAvailableThread = jest.fn()
+      .mockImplementation(() => Promise.resolve());
 
     // Create use case instance
     const getThreadById = new GetThreadByIdUseCase({
@@ -34,11 +44,8 @@ describe('GetThreadByIdUseCase', () => {
     const threadDetail = await getThreadById.execute(useCasePayload.id);
 
     // Assert
+    expect(mockThreadRepository.verifyAvailableThread).toBeCalledWith(useCasePayload.id);
     expect(mockThreadRepository.getThreadById).toBeCalledWith(useCasePayload.id);
-    expect(threadDetail).toStrictEqual(new AddedThread({
-      id: 'thread-123',
-      title: 'Lorem ipsum!',
-      owner: 'user-123',
-    }));
+    expect(threadDetail).toStrictEqual(threadDetailResponse);
   });
 });
