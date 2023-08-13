@@ -2,6 +2,7 @@ const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelp
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const PostComment = require('../../../Domains/threads/comments/entities/PostComment');
 const pool = require('../../database/postgres/pool');
 const ThreadCommentRepositoryPostgres = require('../ThreadCommentRepositoryPostgres');
@@ -108,6 +109,49 @@ describe('ThreadCommentRepositoryPostgres', () => {
       // Action and Assert
       await expect(threadCommentRepositoryPostgres.verifyCommentOwner('comment-68', 'user-56'))
         .resolves.not.toThrowError(AuthorizationError);
+    });
+  });
+
+  describe('verifyAvailableComment function', () => {
+    it('should return error not found comment when comment not exist', async () => {
+      // Arrange
+      const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres(
+        pool,
+        {}
+      );
+
+      // Action and Assert
+      await expect(threadCommentRepositoryPostgres.verifyAvailableComment('comment-not'))
+        .rejects.toThrowError(NotFoundError);
+    });
+
+    it('should not return error not found when comment exist', async () => {
+      // Arrange
+      const payloadUserRegister = {
+        id: 'user-131',
+      };
+      const payloadThread = {
+        id: 'thread-134',
+        owner: payloadUserRegister.id,
+      };
+      const payloadThreadComment = {
+        id: 'comment-137',
+        threadId: payloadThread.id,
+        owner: payloadUserRegister.id,
+      };
+
+      const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres(
+        pool,
+        {},
+      )
+
+      await UsersTableTestHelper.addUser(payloadUserRegister);
+      await ThreadsTableTestHelper.addThreads(payloadThread);
+      await CommentsTableTestHelper.addThreadComment(payloadThreadComment);
+
+      // Action and Assert
+      await expect(threadCommentRepositoryPostgres.verifyAvailableComment('comment-137'))
+        .resolves.not.toThrowError(NotFoundError);
     });
   });
 });
