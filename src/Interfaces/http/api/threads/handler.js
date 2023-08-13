@@ -59,6 +59,15 @@ class ThreadsHandler {
     response.code(201);
     return response;
   }
+
+  async deleteCommentHandler(request, h) {
+    const { commentId } = request.params;
+    const { id: userId } = request.auth.credentials;
+    return {
+      status: 'success',
+      message: `${commentId} ${userId}`,
+    };
+  }
 }
 
 module.exports = ThreadsHandler;

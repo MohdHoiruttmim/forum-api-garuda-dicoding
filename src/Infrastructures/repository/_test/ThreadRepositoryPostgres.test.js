@@ -94,7 +94,7 @@ describe('ThreadRepositoryPostgres', () => {
 
       await UsersTableTestHelper.addUser(payloadUserRegister);
       await ThreadsTableTestHelper.addThreads(payloadAddThread);
-      await CommentsTableTestHelper.AddThreadComment(payloadAddComment);
+      await CommentsTableTestHelper.addThreadComment(payloadAddComment);
 
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 

@@ -18,7 +18,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     if (!result.rowCount) {
       throw new NotFoundError('Thread tidak ditemukan');
     }
-    // console.log('ini penyakit')
+
     return result.rowCount;
   }
 
@@ -49,7 +49,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const threadCommentsQuery = {
       text: `SELECT comments.id, content, username, date FROM comments
              INNER JOIN users ON users.id = comments.owner
-             WHERE thread_id = $1`,
+             WHERE thread_id = $1 ORDER BY date ASC`,
       values: [threadId],
     };
 

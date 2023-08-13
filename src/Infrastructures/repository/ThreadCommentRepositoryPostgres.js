@@ -1,3 +1,4 @@
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const CommentsRepository = require('../../Domains/threads/comments/CommentsRepository');
 
 class ThreadCommentRepositoryPostgres extends CommentsRepository {
@@ -19,6 +20,21 @@ class ThreadCommentRepositoryPostgres extends CommentsRepository {
     const result = await this._pool.query(query);
 
     return { ...result.rows[0] };
+  }
+
+  async verifyCommentOwner(commentId, userId) {
+    const query = {
+      text: 'SELECT id FROM comments WHERE id = $1 AND owner = $2',
+      values: [commentId, userId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new AuthorizationError('Anda tidak memiliki hak ke resource ini');
+    }
+
+    return result.rowCount;
   }
 }
 
