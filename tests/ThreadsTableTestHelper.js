@@ -1,4 +1,4 @@
-/* instanbul ingore file */
+/* istanbul ignore file */
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const ThreadsTableTestHelper = {
@@ -12,7 +12,7 @@ const ThreadsTableTestHelper = {
   ) {
     const query = {
       text: 'INSERT INTO threads VALUES($1, $2, $3, $4, $5)',
-      values: [id, title, body, new Date(), owner],
+      values: [id, title, body, new Date('2023-01-19T00:00:00.000Z'), owner],
     };
 
     await pool.query(query);
