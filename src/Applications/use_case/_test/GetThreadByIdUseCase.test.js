@@ -1,5 +1,4 @@
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
-const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const GetThreadByIdUseCase = require('../GetThreadByIdUseCase');
 
 describe('GetThreadByIdUseCase', () => {

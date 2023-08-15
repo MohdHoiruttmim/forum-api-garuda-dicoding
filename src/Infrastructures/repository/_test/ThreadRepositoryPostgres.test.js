@@ -63,9 +63,11 @@ describe('ThreadRepositoryPostgres', () => {
       });
       const fakeIdGenerator = () => '123';
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
-      await threadRepositoryPostgres.addThread(payloadAddThread);
 
       // Action
+      await threadRepositoryPostgres.addThread(payloadAddThread);
+
+      // Assert
       const thread = await ThreadsTableTestHelper.getThreadsById('thread-123');
       expect(thread).toHaveLength(1);
     });

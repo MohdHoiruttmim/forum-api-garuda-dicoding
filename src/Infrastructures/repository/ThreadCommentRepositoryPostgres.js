@@ -51,6 +51,17 @@ class ThreadCommentRepositoryPostgres extends CommentsRepository {
 
     return result.rowCount;
   }
+
+  async deleteCommentById(commentId) {
+    const query = {
+      text: `UPDATE comments SET content = '**komentar telah dihapus**', is_delete = true
+            WHERE id = $1`,
+      values: [commentId],
+    };
+
+    const result = await this._pool.query(query);
+    return result.rowCount;
+  }
 }
 
 module.exports = ThreadCommentRepositoryPostgres;

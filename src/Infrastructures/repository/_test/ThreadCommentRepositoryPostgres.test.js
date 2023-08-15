@@ -43,9 +43,11 @@ describe('ThreadCommentRepositoryPostgres', () => {
         pool,
         fakeIdGenerator,
       );
-      await threadCommentRepositoryPostgres.addComment(payloadThreadComment);
 
       // Action
+      await threadCommentRepositoryPostgres.addComment(payloadThreadComment);
+
+      // Assert
       const comment = await CommentsTableTestHelper.getCommentById('comment-321');
       expect(comment).toHaveLength(1);
     });
@@ -117,7 +119,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       // Arrange
       const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres(
         pool,
-        {}
+        {},
       );
 
       // Action and Assert
@@ -143,7 +145,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres(
         pool,
         {},
-      )
+      );
 
       await UsersTableTestHelper.addUser(payloadUserRegister);
       await ThreadsTableTestHelper.addThreads(payloadThread);
@@ -152,6 +154,29 @@ describe('ThreadCommentRepositoryPostgres', () => {
       // Action and Assert
       await expect(threadCommentRepositoryPostgres.verifyAvailableComment('comment-137'))
         .resolves.not.toThrowError(NotFoundError);
+    });
+  });
+
+  describe('deleteComment function', () => {
+    it('should delete thread comment correctly', async () => {
+      // Arrange
+      const payloadComment = {
+        id: 'comment-164',
+        threadId: 'thread-123',
+        owner: 'user-123',
+      };
+
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      await ThreadsTableTestHelper.addThreads({ id: 'thread-123' });
+      await CommentsTableTestHelper.addThreadComment(payloadComment);
+
+      const threadCommentRepositoryPostgres = new ThreadCommentRepositoryPostgres(
+        pool,
+        {},
+      );
+
+      // Action and Assert
+      expect(await threadCommentRepositoryPostgres.deleteCommentById('comment-164')).toEqual(1);
     });
   });
 });
