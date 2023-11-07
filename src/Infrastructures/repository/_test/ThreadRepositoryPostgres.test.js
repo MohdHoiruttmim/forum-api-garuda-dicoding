@@ -5,6 +5,7 @@ const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const PostThread = require('../../../Domains/threads/entities/PostThread');
 const pool = require('../../database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
+const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
 
 describe('ThreadRepositoryPostgres', () => {
   afterEach(async () => {
@@ -93,10 +94,17 @@ describe('ThreadRepositoryPostgres', () => {
         threadId: payloadAddThread.id,
         owner: payloadUserRegister.id,
       };
+      const payloadAddReply = {
+        id: 'reply-007',
+        content: 'ini adalah sebuah balasan',
+        commentId: payloadAddComment.id,
+        owner: payloadUserRegister.id,
+      };
 
       await UsersTableTestHelper.addUser(payloadUserRegister);
       await ThreadsTableTestHelper.addThreads(payloadAddThread);
       await CommentsTableTestHelper.addThreadComment(payloadAddComment);
+      await RepliesTableTestHelper.addReply(payloadAddReply);
 
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
@@ -114,6 +122,14 @@ describe('ThreadRepositoryPostgres', () => {
             username: payloadUserRegister.username,
             date: new Date('2023-01-19T00:00:00.000Z'),
             content: payloadAddComment.content,
+            replies: [
+              {
+                id: payloadAddReply.id,
+                content: payloadAddReply.content,
+                date: new Date('2023-01-19T00:00:00.000Z'),
+                username: payloadUserRegister.username,
+              },
+            ],
           },
         ],
       });
