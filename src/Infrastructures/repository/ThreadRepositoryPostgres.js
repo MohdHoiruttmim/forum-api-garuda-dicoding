@@ -44,7 +44,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [threadId],
     };
 
-    const { rows: threads } = await this._pool.query(query);
+    const result = await this._pool.query(query);
 
     const threadCommentsQuery = {
       text: `SELECT comments.id, content, username, date FROM comments
@@ -53,32 +53,31 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       values: [threadId],
     };
 
-    const threadCommentsRepliesQuery = {
-      text: `SELECT replies.id, replies.content, replies.date, username FROM replies
-             LEFT JOIN users ON users.id = replies.owner
-             LEFT JOIN comments ON comments.id = replies.comment_id
-             WHERE comments.thread_id = $1`,
-      values: [threadId],
-    };
+    // const threadCommentsRepliesQuery = {
+    //   text: `SELECT replies.id, replies.content, replies.date, username FROM replies
+    //          LEFT JOIN users ON users.id = replies.owner
+    //          LEFT JOIN comments ON comments.id = replies.comment_id
+    //          WHERE comments.thread_id = $1`,
+    //   values: [threadId],
+    // };
 
     const { rows: comments } = await this._pool.query(threadCommentsQuery);
-    const { rows: replies } = await this._pool.query(threadCommentsRepliesQuery);
+    // const { rows: replies } = await this._pool.query(threadCommentsRepliesQuery);
 
-    // result.rows[0].comments = await comments;
-    // result.rows[0]["comments"]["replies"] = await replies;
-    // return { ...result.rows[0] };
+    result.rows[0].comments = await comments;
+    return { ...result.rows[0] };
 
-    const result = {
-      threads: {
-        threads,
-        comments: {
-          comments,
-          replies,
-        },
-      },
-    };
-    console.log(result);
-    return { result };
+    // const result = {
+    //   threads: {
+    //     threads,
+    //     comments: {
+    //       comments,
+    //       replies,
+    //     },
+    //   },
+    // };
+    // console.log(result);
+    // return { result };
   }
 }
 
